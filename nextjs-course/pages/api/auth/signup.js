@@ -2,9 +2,10 @@ import { hashPassword } from '../../../lib/auth';
 import { connectToDatabase } from '../../../lib/db';
 
 async function handler(req, res) {
-   if (req.method !== 'POST') {
+  if (req.method !== 'POST') {
     return;
   }
+
   const data = req.body;
 
   const { email, password } = data;
@@ -25,6 +26,7 @@ async function handler(req, res) {
   const client = await connectToDatabase();
 
   const db = client.db();
+
   const existingUser = await db.collection('users').findOne({ email: email });
 
   if (existingUser) {

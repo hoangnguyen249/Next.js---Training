@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { signIn } from 'next-auth/react';
 import classes from './auth-form.module.css';
 
 async function createUser(email, password) {
@@ -18,9 +19,11 @@ async function createUser(email, password) {
 
   return data;
 }
+
 function AuthForm() {
   const emailInputRef = useRef();
-  const passwordInputRef = useRef()
+  const passwordInputRef = useRef();
+
   const [isLogin, setIsLogin] = useState(true);
 
   function switchAuthModeHandler() {
@@ -35,8 +38,14 @@ function AuthForm() {
 
     // optional: Add validation
 
-    if (isLogin) {
-      // log user in
+   if (isLogin) {
+      const result = await signIn('credentials', {
+        redirect: false,
+        email: enteredEmail,
+        password: enteredPassword,
+      });
+
+      console.log(result);
     } else {
       try {
         const result = await createUser(enteredEmail, enteredPassword);
@@ -47,7 +56,7 @@ function AuthForm() {
     }
   }
 
-   return (
+  return (
     <section className={classes.auth}>
       <h1>{isLogin ? 'Login' : 'Sign Up'}</h1>
       <form onSubmit={submitHandler}>
@@ -57,7 +66,12 @@ function AuthForm() {
         </div>
         <div className={classes.control}>
           <label htmlFor='password'>Your Password</label>
-          <input type='password' id='password' required />
+          <input
+            type='password'
+            id='password'
+            required
+            ref={passwordInputRef}
+          />
         </div>
         <div className={classes.actions}>
           <button>{isLogin ? 'Login' : 'Create Account'}</button>
